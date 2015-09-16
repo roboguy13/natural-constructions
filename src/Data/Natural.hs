@@ -18,15 +18,25 @@ infixr ~>
 type f **  g = Natural (,)    f g
 type f ++  g = Natural Either f g
 
--- | These '.' prefixed versions of things are used when chaining things
--- together. For instance, if we want a two argument (curried) natural
--- transformation we could have
+-- | These '.' prefixed versions of things are used when composing natural
+-- constructions together. For instance, if we want a two argument
+-- (curried) natural transformation we could have
+--
 --     example :: (f ~> g .~> h) -> Int
+--
 -- This is necessary so that the forall'd variable gets "propagated", since
 -- what we really want to end up with is (after expanding the type
 -- synonyms):
+--
 --     example :: (forall a. f a -> g a -> h a) -> Int
--- The '.' prefixed versions propagate the forall'd variable in this way.
+--
+-- The '.' prefixed versions (when combined either with the non-'.'
+-- versions or with End) propagate the forall'd variable in this way.
+--
+-- This is how End could be used to accomplish the above example instead of
+-- mixing in the non-'.' operators:
+--
+--     example :: End (f .~> g .~> h) -> Int
 type (f .~> g) a = f a -> g a
 infixr .~>
 
