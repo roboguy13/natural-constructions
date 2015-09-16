@@ -1,18 +1,25 @@
-{-# LANGUAGE RankNTypes          #-}
-{-# LANGUAGE TypeOperators       #-}
-{-# LANGUAGE LiberalTypeSynonyms #-}
+{-# LANGUAGE RankNTypes                #-}
+{-# LANGUAGE TypeOperators             #-}
+{-# LANGUAGE LiberalTypeSynonyms       #-}
+{-# LANGUAGE PolyKinds                 #-}
+{-# LANGUAGE ExistentialQuantification #-}
 
 module Data.Natural
   where
 
 import           Data.Bifunctor
 
-type Natural p f g = forall a. p (f a) (g a)
+type Natural  p f g = forall a. p (f a) (g a)
+data Natural' p f g = forall a. Natural' (p (f a) (g a))
 
 infixr ~>
 type f ~> g = Natural (->)   f g
 type f ** g = Natural (,)    f g
 type f ++ g = Natural Either f g
+
+type f :~> g = Natural' (->)   f g
+type f :** g = Natural' (,)    f g
+type f :++ g = Natural' Either f g
 
 -- | These '.' prefixed versions of things are used when composing natural
 -- constructions together. For instance, if we want a two argument
