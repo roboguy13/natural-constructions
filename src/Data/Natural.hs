@@ -8,13 +8,10 @@ module Data.Natural
 import           Data.Bifunctor
 
 type Natural p f g = forall a. p (f a) (g a)
-type BiNat   p f g = Bifunctor p => Natural p f g
 
 type f ~> g = Natural (->)   f g
 infixr ~>
 
--- Two examples of BiNats (not written with BiNat for a more clear analogy
--- to the above definition of (~>)):
 type f ** g = Natural (,)    f g
 type f ++ g = Natural Either f g
 
@@ -60,8 +57,10 @@ natUncurry f (x, y) = f x y
 apply :: ((f .~> g) .** f) ~> g
 apply (tr, fa) = tr fa
 
-natFirst :: (f ~> f') -> BiNat p f g -> BiNat p f' g
+-- These two work with both (**) and (++) because of the Bifunctor
+-- constraint:
+natFirst :: Bifunctor p => (f ~> f') -> Natural p f g -> Natural p f' g
 natFirst tr p = first tr p
 
-natSecond :: (g ~> g') -> BiNat p f g -> BiNat p f g'
+natSecond :: Bifunctor p => (g ~> g') -> Natural p f g -> Natural p f g'
 natSecond tr p = second tr p
