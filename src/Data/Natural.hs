@@ -9,9 +9,8 @@ import           Data.Bifunctor
 
 type Natural p f g = forall a. p (f a) (g a)
 
-type f ~> g = Natural (->)   f g
 infixr ~>
-
+type f ~> g = Natural (->)   f g
 type f ** g = Natural (,)    f g
 type f ++ g = Natural Either f g
 
