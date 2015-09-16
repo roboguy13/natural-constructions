@@ -46,7 +46,8 @@ infixr .~>
 type (f .** g) a = (f a, g a)
 type (f .++ g) a = Either (f a) (g a)
 
-type End f = forall a. f a
+type End  f = forall a. f a
+data End' f = forall a. End' (f a)
 
 natFst :: f ** g -> f a
 natFst (fa, _) = fa
