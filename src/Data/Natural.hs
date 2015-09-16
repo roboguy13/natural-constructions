@@ -56,7 +56,7 @@ natUncurry f (x, y) = f x y
 internalApply :: ((f .~> g) .** f) ~> g
 internalApply (tr, fa) = tr fa
 
-apply :: ((f .~> g) ** f) -> g a
+apply :: ((f .~> g) ** f) -> g b
 apply (tr, fa) = tr fa
 
 -- These two work with both (**) and (++) because of the Bifunctor
