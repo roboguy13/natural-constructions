@@ -14,9 +14,9 @@ type f ~> g = Natural (->)   f g
 infixr ~>
 
 -- Two examples of BiNats (not written with BiNat for a more clear analogy
--- to the definition of (~>)):
-type f **  g = Natural (,)    f g
-type f ++  g = Natural Either f g
+-- to the above definition of (~>)):
+type f ** g = Natural (,)    f g
+type f ++ g = Natural Either f g
 
 -- | These '.' prefixed versions of things are used when composing natural
 -- constructions together. For instance, if we want a two argument
