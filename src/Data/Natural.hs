@@ -3,6 +3,7 @@
 {-# LANGUAGE LiberalTypeSynonyms       #-}
 {-# LANGUAGE PolyKinds                 #-}
 {-# LANGUAGE ExistentialQuantification #-}
+{-# LANGUAGE PatternSynonyms           #-}
 
 module Data.Natural
   where
@@ -20,6 +21,8 @@ type f ++ g = Natural Either f g
 type f :~> g = Natural' (->)   f g
 type f :** g = Natural' (,)    f g
 type f :++ g = Natural' Either f g
+
+pattern fa :** ga = Natural' (fa, ga)
 
 -- | These '.' prefixed versions of things are used when composing natural
 -- constructions together. For instance, if we want a two argument
