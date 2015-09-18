@@ -52,11 +52,11 @@ type (f .++ g) a = Either (f a) (g a)
 type End  f = forall a. f a
 data End' f = forall a. End' (f a)
 
-natFst :: f ** g -> f a
-natFst (fa, _) = fa
+natFst :: f :** g -> End' f
+natFst (fa :** _) = End' fa
 
-natSnd :: f ** g -> g a
-natSnd (_, ga) = ga
+natSnd :: f :** g -> End' g
+natSnd (_ :** ga) = End' ga
 
 natCurry :: ((f .** g) ~> h) -> (f ~> g .~> h)
 natCurry f x y = f (x, y)
