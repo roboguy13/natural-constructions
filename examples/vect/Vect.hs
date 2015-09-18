@@ -18,11 +18,11 @@ data Vect a (n :: Nat) where
   Cons :: a -> Vect a n -> Vect a (Succ n)
 
 dfilter :: (e -> Bool) -> Vect e n -> NatS :** (Vect e)
-dfilter _ Nil = Natural' (ZeroS, Nil)
+dfilter _ Nil = ZeroS :** Nil
 dfilter f (Cons x xs)
   | f x =
       case dfilter f xs of
-        n :** xs' -> SuccS n :** (Cons x xs)
+        n :** xs' -> SuccS n :** (Cons x xs')
   | otherwise =
       dfilter f xs
 
