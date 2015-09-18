@@ -52,6 +52,9 @@ type (f .++ g) a = Either (f a) (g a)
 type End  f = forall a. f a
 data End' f = forall a. End' (f a)
 
+endApply :: (forall a. f a -> b) -> End' f -> b
+endApply f (End' e) = f e
+
 natFst :: f :** g -> End' f
 natFst (fa :** _) = End' fa
 
