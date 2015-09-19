@@ -52,7 +52,7 @@ parseExpr :: String -> (Constr Show) :** Expr
 parseExpr str
   = case parse exprParser "" str of
       Left err -> error $ "Parse error: " ++ show err
-      Right r  -> undefined
+      Right r  -> r
 
 exprParser :: Parser ((Constr Show) :** Expr)
 exprParser
