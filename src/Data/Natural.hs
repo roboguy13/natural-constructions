@@ -1,16 +1,17 @@
 {-# LANGUAGE RankNTypes                #-}
-{-# LANGUAGE TypeOperators             #-}
-{-# LANGUAGE LiberalTypeSynonyms       #-}
+{-# LANGUAGE TypeOperators             #-} {-# LANGUAGE LiberalTypeSynonyms       #-}
 {-# LANGUAGE PolyKinds                 #-}
 {-# LANGUAGE ExistentialQuantification #-}
 {-# LANGUAGE PatternSynonyms           #-}
+{-# LANGUAGE ConstraintKinds           #-}
 
 module Data.Natural
   where
 
 import           Data.Bifunctor
+import           Data.Proxy
 
-type Natural  p f g = forall a. p (f a) (g a)
+type Natural  p f g = forall a.           p (f a) (g a)
 data Natural' p f g = forall a. Natural' (p (f a) (g a))
 
 infixr ~>
@@ -55,6 +56,11 @@ data End' f = forall a. End' (f a)
 endApply :: (forall a. f a -> b) -> End' f -> b
 endApply f (End' e) = f e
 
+data Constr c a = c a => Constr (Proxy c)
+
+constrApply :: (forall a. c a => g a -> b) -> Constr c :** g -> b
+constrApply f (Constr Proxy :** ga) = f ga
+
 natFst :: f :** g -> End' f
 natFst (fa :** _) = End' fa
 
@@ -80,3 +86,9 @@ natFirst tr p = first tr p
 
 natSecond :: Bifunctor p => (g ~> g') -> Natural p f g -> Natural p f g'
 natSecond tr p = second tr p
+
+natFirst' :: Bifunctor p => (f ~> f') -> Natural' p f g -> Natural' p f' g
+natFirst' tr (Natural' p) = Natural' $ first tr p
+
+natSecond' :: Bifunctor p => (g ~> g') -> Natural' p f g -> Natural' p f g'
+natSecond' tr (Natural' p) = Natural' $ second tr p
