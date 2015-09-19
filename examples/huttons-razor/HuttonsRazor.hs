@@ -19,6 +19,10 @@
 --  * Example 3:
 --      ghci> parseEvalAndShow  "2 + 4 = 1 + 6 + 7"
 --      "False"
+--
+--  * Example 4:
+--      ghci> constrApply showExpr (parseExpr "2 + 4 = 6")
+--      "Literal 2 + Literal 4 = Literal 6"
 
 import           Data.Natural
 
@@ -39,6 +43,11 @@ eval :: Expr a -> a
 eval (Literal n) = n
 eval (Add   x y) = eval x + eval y
 eval (Equal x y) = eval x == eval y
+
+showExpr :: Expr a -> String
+showExpr (Literal n) = "Literal " ++ show n
+showExpr (Add x y)   = showExpr x ++ " + " ++ showExpr y
+showExpr (Equal x y) = showExpr x ++ " = " ++ showExpr y
 
 parseAndEval :: String -> (Constr Show) :** Identity
 parseAndEval str
