@@ -28,17 +28,7 @@ import           Text.Parsec.String
 import           Control.Monad
 import           Control.Monad.Identity
 
--- Unfortunately, this doesn't work with an open data family, so a GADT
--- must be used here.
--- TODO: See if there's a way to use an open data family with the rest of
--- the code.
-data Sing a where
-  IntS  :: Sing Int
-  BoolS :: Sing Bool
-
--- data family Sing a
--- data instance Sing Int = IntS
--- data instance Sing Bool = BoolS
+import           Data.Proxy
 
 data Expr a where
   Literal :: Int                  -> Expr Int
@@ -50,30 +40,26 @@ eval (Literal n) = n
 eval (Add   x y) = eval x + eval y
 eval (Equal x y) = eval x == eval y
 
-parseAndEval :: String -> (Sing :** Identity)
+parseAndEval :: String -> (Constr Show) :** Identity
 parseAndEval str
-  = case parseExpr str of
-      IntS  :** x -> IntS :** Identity (eval x)
-      BoolS :** x -> BoolS :** Identity (eval x)
+  = natSecond' (Identity . eval) (parseExpr str)
 
 parseEvalAndShow :: String -> String
 parseEvalAndShow str
-  = case parseAndEval str of
-      IntS  :** Identity n -> show n
-      BoolS :** Identity b -> show b
+  = constrApply (show . runIdentity) (parseAndEval str)
 
-parseExpr :: String -> Sing :** Expr
+parseExpr :: String -> (Constr Show) :** Expr
 parseExpr str
   = case parse exprParser "" str of
       Left err -> error $ "Parse error: " ++ show err
-      Right r  -> r
+      Right r  -> undefined
 
-exprParser :: Parser (Sing :** Expr)
+exprParser :: Parser ((Constr Show) :** Expr)
 exprParser
   = choice $ map try
-      [ fmap (BoolS :**) parseEqual
-      , fmap (IntS  :**) parseAdd
-      , fmap (IntS  :**) parseLiteral
+      [ fmap (Constr Proxy :**) parseEqual
+      , fmap (Constr Proxy :**) parseAdd
+      , fmap (Constr Proxy :**) parseLiteral
       ]
 
 parseLiteral :: Parser (Expr Int)
