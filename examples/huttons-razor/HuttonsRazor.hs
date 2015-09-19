@@ -49,13 +49,16 @@ showExpr (Literal n) = "Literal " ++ show n
 showExpr (Add x y)   = showExpr x ++ " + " ++ showExpr y
 showExpr (Equal x y) = showExpr x ++ " = " ++ showExpr y
 
-parseAndEval :: String -> (Constr Show) :** Identity
-parseAndEval str
-  = natSecond' (Identity . eval) (parseExpr str)
+withParsedExpr :: (forall a. Expr a -> b) -> String -> b
+withParsedExpr f = constrApply f . parseExpr
 
 parseEvalAndShow :: String -> String
 parseEvalAndShow str
   = constrApply (show . runIdentity) (parseAndEval str)
+
+parseAndEval :: String -> (Constr Show) :** Identity
+parseAndEval str
+  = natSecond' (Identity . eval) (parseExpr str)
 
 parseExpr :: String -> (Constr Show) :** Expr
 parseExpr str
