@@ -6,6 +6,12 @@
 
 import           Data.Natural
 
+--
+-- Example usage:
+-- ghci> endApply showVect . natSnd $ dfilter even (Cons 1 (Cons 2 (Cons 3 (Cons 4 Nil))))
+-- "2 : 4 : []"
+--
+
 data Nat = Zero | Succ Nat
 
 -- | Natural number singletons
@@ -25,4 +31,9 @@ dfilter f (Cons x xs)
         n :** xs' -> SuccS n :** (Cons x xs')
   | otherwise =
       dfilter f xs
+
+-- | For testing/demonstration purposes
+showVect :: Show e => Vect e n -> String
+showVect Nil = "[]"
+showVect (Cons x xs) = show x ++ " : " ++ showVect xs
 
