@@ -1,5 +1,6 @@
 {-# LANGUAGE RankNTypes                #-}
-{-# LANGUAGE TypeOperators             #-} {-# LANGUAGE LiberalTypeSynonyms       #-}
+{-# LANGUAGE TypeOperators             #-}
+{-# LANGUAGE LiberalTypeSynonyms       #-}
 {-# LANGUAGE PolyKinds                 #-}
 {-# LANGUAGE ExistentialQuantification #-}
 {-# LANGUAGE PatternSynonyms           #-}
