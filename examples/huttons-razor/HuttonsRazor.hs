@@ -20,7 +20,7 @@
 --      "False"
 --
 --  * Example 4:
---      ghci> endApply showExpr . natSnd $ parseExpr "2 + 4 = 6"
+--      ghci> withParsedExpr showExpr "2 + 4 = 6"
 --      "Literal 2 + Literal 4 = Literal 6"
 
 import           Data.Natural
