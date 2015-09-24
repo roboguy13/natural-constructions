@@ -1,7 +1,6 @@
 {-# LANGUAGE GADTs          #-}
 {-# LANGUAGE DataKinds      #-}
 {-# LANGUAGE TypeOperators  #-}
-{-# LANGUAGE KindSignatures #-}
 {-# LANGUAGE RankNTypes     #-}
 {-# LANGUAGE TypeFamilies   #-}
 
@@ -21,7 +20,7 @@
 --      "False"
 --
 --  * Example 4:
---      ghci> constrApply showExpr (parseExpr "2 + 4 = 6")
+--      ghci> endApply showExpr . natSnd $ parseExpr "2 + 4 = 6"
 --      "Literal 2 + Literal 4 = Literal 6"
 
 import           Data.Natural
@@ -29,15 +28,20 @@ import           Data.Natural
 import           Text.Parsec
 import           Text.Parsec.String
 
-import           Control.Monad
 import           Control.Monad.Identity
-
-import           Data.Proxy
 
 data Expr a where
   Literal :: Int                  -> Expr Int
   Add     :: Expr Int -> Expr Int -> Expr Int
   Equal   :: Expr Int -> Expr Int -> Expr Bool
+
+--- Unfortunately, this doesn't work with an open data family, so a GADT
+--- must be used here.
+--- TODO: See if there's a way to use an open data family with the rest of
+--- the code.
+data ExprSing a where
+  IntS  :: ExprSing Int
+  BoolS :: ExprSing Bool
 
 eval :: Expr a -> a
 eval (Literal n) = n
@@ -50,28 +54,30 @@ showExpr (Add x y)   = showExpr x ++ " + " ++ showExpr y
 showExpr (Equal x y) = showExpr x ++ " = " ++ showExpr y
 
 withParsedExpr :: (forall a. Expr a -> b) -> String -> b
-withParsedExpr f = constrApply f . parseExpr
+withParsedExpr f = endApply f . natSnd . parseExpr
 
 parseEvalAndShow :: String -> String
 parseEvalAndShow str
-  = constrApply (show . runIdentity) (parseAndEval str)
+  = case parseAndEval str of
+      IntS  :** Identity n -> show n
+      BoolS :** Identity b -> show b
 
-parseAndEval :: String -> (Constr Show) :** Identity
+parseAndEval :: String -> ExprSing :** Identity
 parseAndEval str
   = natSecond' (Identity . eval) (parseExpr str)
 
-parseExpr :: String -> (Constr Show) :** Expr
+parseExpr :: String -> ExprSing :** Expr
 parseExpr str
   = case parse exprParser "" str of
       Left err -> error $ "Parse error: " ++ show err
       Right r  -> r
 
-exprParser :: Parser ((Constr Show) :** Expr)
+exprParser :: Parser (ExprSing :** Expr)
 exprParser
   = choice $ map try
-      [ fmap (Constr Proxy :**) parseEqual
-      , fmap (Constr Proxy :**) parseAdd
-      , fmap (Constr Proxy :**) parseLiteral
+      [ fmap (BoolS :**) parseEqual
+      , fmap (IntS  :**) parseAdd
+      , fmap (IntS  :**) parseLiteral
       ]
 
 parseLiteral :: Parser (Expr Int)
