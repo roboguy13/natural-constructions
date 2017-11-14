@@ -3,6 +3,7 @@
 {-# LANGUAGE TypeOperators  #-}
 {-# LANGUAGE RankNTypes     #-}
 {-# LANGUAGE TypeFamilies   #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 
 -- Based on a slight extension of Hutton's razor
 
@@ -42,6 +43,10 @@ data Expr a where
 data ExprSing a where
   IntS  :: ExprSing Int
   BoolS :: ExprSing Bool
+
+-- data family ExprSing a
+-- data instance ExprSing Int  = IntS
+-- data instance ExprSing Bool = BoolS
 
 eval :: Expr a -> a
 eval (Literal n) = n
